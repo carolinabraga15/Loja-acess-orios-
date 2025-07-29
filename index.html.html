@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CB Acessórios</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff8f9;
+      color: #333;
+    }
+    header {
+      background-color: #f7dce5;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #b44b7a;
+    }
+    nav {
+      margin-top: 0.5rem;
+    }
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #b44b7a;
+      font-weight: bold;
+    }
+    .banner {
+      background-image: url('https://images.unsplash.com/photo-1580745168813-71c74c2a7f43');
+      background-size: cover;
+      background-position: center;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-shadow: 2px 2px 4px #000;
+    }
+    .banner h2 {
+      font-size: 2.5rem;
+    }
+    .produtos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 2rem;
+    }
+    .produto {
+      background-color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .produto img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .produto h3 {
+      margin: 0.5rem 0;
+      color: #b44b7a;
+    }
+    .produto p {
+      margin: 0.5rem 0;
+    }
+    .produto button {
+      background-color: #b44b7a;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0.2rem;
+    }
+    .sobre, .contato, .galeria {
+      padding: 2rem;
+      background-color: #fff0f5;
+    }
+    .sobre h2, .contato h2, .galeria h2 {
+      color: #b44b7a;
+    }
+    .galeria img {
+      width: 100%;
+      max-width: 300px;
+      margin: 10px;
+      border-radius: 10px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+    }
+    input, textarea {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .whatsapp {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25d366;
+      color: white;
+      padding: 0.8rem 1rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .painel-admin {
+      display: none;
+      padding: 1rem 2rem;
+      background-color: #fce4ec;
+      border-top: 2px solid #b44b7a;
+    }
+    .painel-admin.ativo {
+      display: block;
+    }
+    .painel-admin input {
+      padding: 0.5rem;
+      margin-right: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .painel-admin button {
+      padding: 0.5rem 1rem;
+      background-color: #b44b7a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .login-admin {
+      padding: 1rem 2rem;
+      background-color: #fff0f5;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #f7dce5;
+      color: #b44b7a;
+    }
+  </style>
+  <script>
+    const senhaAdmin = "140515cb";
+
+    function adicionarProduto(nome, preco, imagem) {
+      const produtosSalvos = JSON.parse(localStorage.getItem('produtos')) || [];
+      produtosSalvos.push({ nome, preco, imagem });
+      localStorage.setItem('produtos', JSON.stringify(produtosSalvos));
+      renderizarProdutos();
+    }
+
+    function removerProduto(index) {
+      const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+      produtos.splice(index, 1);
+      localStorage.setItem('produtos', JSON.stringify(produtos));
+      renderizarProdutos();
+    }
+
+    function renderizarProdutos() {
+      const secao = document.getElementById('produtos');
+      secao.innerHTML = '';
+      const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+      produtos.forEach((prod, index) => {
+        const div = document.createElement('div');
+        div.className = 'produto';
+        div.innerHTML = `
+          <img src="${prod.imagem}" alt="${prod.nome}" />
+          <h3 contenteditable onblur="editarCampo(${index}, 'nome', this.innerText)">${prod.nome}</h3>
+          <p contenteditable onblur="editarCampo(${index}, 'preco', this.innerText)">${prod.preco}</p>
+          <button onclick="alert('Adicionado ao carrinho!')">Comprar</button>
+          <button onclick="removerProduto(${index})">Remover</button>
+        `;
+        secao.appendChild(div);
+      });
+    }
+
+    function editarCampo(index, campo, valor) {
+      const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
+      produtos[index][campo] = valor;
+      localStorage.setItem('produtos', JSON.stringify(produtos));
+    }
+
+    function handleAddProduto() {
+      const nome = document.getElementById('nome-produto').value;
+      const preco = document.getElementById('preco-produto').value;
+      const imagem = document.getElementById('imagem-produto').value;
+      if (nome && preco && imagem) {
+        adicionarProduto(nome, preco, imagem);
+        document.getElementById('nome-produto').value = '';
+        document.getElementById('preco-produto').value = '';
+        document.getElementById('imagem-produto').value = '';
+      } else {
+        alert('Preencha todos os campos!');
+      }
+    }
+
+    function exportarProdutos() {
+      const dados = localStorage.getItem('produtos');
+      const blob = new Blob([dados], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'produtos.json';
+      a.click();
+    }
+
+    function importarProdutos(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const produtos = JSON.parse(e.target.result);
+        localStorage.setItem('produtos', JSON.stringify(produtos));
+        renderizarProdutos();
+      };
+      reader.readAsText(file);
+    }
+
+    function loginAdmin() {
+      const senha = prompt("Digite a senha de administradora:");
+      if (senha === senhaAdmin) {
+        document.querySelector('.painel-admin').classList.add('ativo');
+        document.querySelector('.login-admin').style.display = 'none';
+      } else {
+        alert('Senha incorreta!');
+      }
+    }
+
+    window.onload = renderizarProdutos;
+  </script>
+</head>
+<body>
+  <header>
+    <h1>CB Acessórios</h1>
+    <nav>
+      <a href="#">Início</a>
+      <a href="#produtos">Produtos</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#galeria">Galeria</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </header>
+  <section class="banner">
+    <h2>Realce sua beleza com nossos acessórios</h2>
+  </section>
+  <section class="login-admin">
+    <button onclick="loginAdmin()">Login Administradora</button>
+  </section>
+  <section class="painel-admin">
+    <h3>Adicionar novo produto</h3>
+    <input type="text" id="nome-produto" placeholder="Nome do produto" />
+    <input type="text" id="preco-produto" placeholder="Preço" />
+    <input type="text" id="imagem-produto" placeholder="URL da imagem" />
+    <button onclick="handleAddProduto()">Adicionar</button>
+    <hr />
+    <button onclick="exportarProdutos()">Exportar Produtos</button>
+    <input type="file" accept="application/json" onchange="importarProdutos(event)" />
+  </section>
+  <section class="produtos" id="produtos"></section>
+  <section class="sobre" id="sobre">
+    <h2>Sobre a CB Acessórios</h2>
+    <p>Somos apaixonadas por realçar a beleza e o estilo de cada mulher. Trabalhamos com carinho, trazendo produtos escolhidos a dedo para você se sentir ainda mais linda.</p>
+    <p><strong>Forma de pagamento via Pix:</strong> Chave 85988934106</p>
+  </section>
+  <section class="galeria" id="galeria">
+    <h2>Galeria</h2>
+    <div></div>
+  </section>
+  <section class="contato" id="contato">
+    <h2>Fale com a gente</h2>
+    <form>
+      <input type="text" placeholder="Seu nome" required />
+      <input type="email" placeholder="Seu e-mail" required />
+      <textarea placeholder="Sua mensagem" rows="4" required></textarea>
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+  <a class="whatsapp" href="https://wa.me/5585988934106" target="_blank">Fale no WhatsApp</a>
+  <footer>
+    <p>&copy; 2025 CB Acessórios. Todos os direitos reservados.</p>
+  </footer>
+</body>
+</html>
